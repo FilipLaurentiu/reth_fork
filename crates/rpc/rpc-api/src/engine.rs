@@ -100,8 +100,8 @@ pub trait EngineApi {
 /// A subset of the ETH rpc interface: <https://ethereum.github.io/execution-apis/api-documentation/>
 ///
 /// Specifically for the engine auth server: <https://github.com/ethereum/execution-apis/blob/main/src/engine/common.md#underlying-protocol>
-#[cfg_attr(not(feature = "client"), rpc(server, namespace = "eth"))]
-#[cfg_attr(feature = "client", rpc(server, client, namespace = "eth"))]
+#[cfg_attr(not(feature = "client"), rpc(server, namespace = "spire"))]
+#[cfg_attr(feature = "client", rpc(server, client, namespace = "spire"))]
 #[async_trait]
 pub trait EngineEthApi {
     /// Returns an object with data about the sync status or false.

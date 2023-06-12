@@ -9,8 +9,8 @@ use reth_rpc_types::{
 };
 
 /// Eth rpc interface: <https://ethereum.github.io/execution-apis/api-documentation/>
-#[cfg_attr(not(feature = "client"), rpc(server, namespace = "eth"))]
-#[cfg_attr(feature = "client", rpc(server, client, namespace = "eth"))]
+#[cfg_attr(not(feature = "client"), rpc(server, namespace = "spire"))]
+#[cfg_attr(feature = "client", rpc(server, client, namespace = "spire"))]
 #[async_trait]
 pub trait EthApi {
     /// Returns the protocol version encoded as a string.
@@ -59,33 +59,6 @@ pub trait EthApi {
         &self,
         number: BlockNumberOrTag,
     ) -> RpcResult<Option<U256>>;
-
-    /// Returns the number of uncles in a block from a block matching the given block hash.
-    #[method(name = "getUncleCountByBlockHash")]
-    async fn block_uncles_count_by_hash(&self, hash: H256) -> RpcResult<Option<U256>>;
-
-    /// Returns the number of uncles in a block with given block number.
-    #[method(name = "getUncleCountByBlockNumber")]
-    async fn block_uncles_count_by_number(
-        &self,
-        number: BlockNumberOrTag,
-    ) -> RpcResult<Option<U256>>;
-
-    /// Returns an uncle block of the given block and index.
-    #[method(name = "getUncleByBlockHashAndIndex")]
-    async fn uncle_by_block_hash_and_index(
-        &self,
-        hash: H256,
-        index: Index,
-    ) -> RpcResult<Option<RichBlock>>;
-
-    /// Returns an uncle block of the given block and index.
-    #[method(name = "getUncleByBlockNumberAndIndex")]
-    async fn uncle_by_block_number_and_index(
-        &self,
-        number: BlockNumberOrTag,
-        index: Index,
-    ) -> RpcResult<Option<RichBlock>>;
 
     /// Returns the information about a transaction requested by transaction hash.
     #[method(name = "getTransactionByHash")]
@@ -145,27 +118,6 @@ pub trait EthApi {
         state_overrides: Option<StateOverride>,
     ) -> RpcResult<Bytes>;
 
-    /// Generates an access list for a transaction.
-    ///
-    /// This method creates an [EIP2930](https://eips.ethereum.org/EIPS/eip-2930) type accessList based on a given Transaction.
-    ///
-    /// An access list contains all storage slots and addresses touched by the transaction, except
-    /// for the sender account and the chain's precompiles.
-    ///
-    /// It returns list of addresses and storage keys used by the transaction, plus the gas
-    /// consumed when the access list is added. That is, it gives you the list of addresses and
-    /// storage keys that will be used by that transaction, plus the gas consumed if the access
-    /// list is included. Like eth_estimateGas, this is an estimation; the list could change
-    /// when the transaction is actually mined. Adding an accessList to your transaction does
-    /// not necessary result in lower gas usage compared to a transaction without an access
-    /// list.
-    #[method(name = "createAccessList")]
-    async fn create_access_list(
-        &self,
-        request: CallRequest,
-        block_number: Option<BlockId>,
-    ) -> RpcResult<AccessListWithGasUsed>;
-
     /// Generates and returns an estimate of how much gas is necessary to allow the transaction to
     /// complete.
     #[method(name = "estimateGas")]
@@ -197,31 +149,6 @@ pub trait EthApi {
         newest_block: BlockId,
         reward_percentiles: Option<Vec<f64>>,
     ) -> RpcResult<FeeHistory>;
-
-    /// Returns whether the client is actively mining new blocks.
-    #[method(name = "mining")]
-    async fn is_mining(&self) -> RpcResult<bool>;
-
-    /// Returns the number of hashes per second that the node is mining with.
-    #[method(name = "hashrate")]
-    async fn hashrate(&self) -> RpcResult<U256>;
-
-    /// Returns the hash of the current block, the seedHash, and the boundary condition to be met
-    /// (“target”)
-    #[method(name = "getWork")]
-    async fn get_work(&self) -> RpcResult<Work>;
-
-    /// Used for submitting mining hashrate.
-    ///
-    /// Can be used for remote miners to submit their hash rate.
-    /// It accepts the miner hash rate and an identifier which must be unique between nodes.
-    /// Returns `true` if the block was successfully submitted, `false` otherwise.
-    #[method(name = "submitHashrate")]
-    async fn submit_hashrate(&self, hashrate: U256, id: H256) -> RpcResult<bool>;
-
-    /// Used for submitting a proof-of-work solution.
-    #[method(name = "submitWork")]
-    async fn submit_work(&self, nonce: H64, pow_hash: H256, mix_digest: H256) -> RpcResult<bool>;
 
     /// Sends transaction; will block waiting for signer to return the
     /// transaction hash.
